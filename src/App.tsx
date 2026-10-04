@@ -1,9 +1,9 @@
 import { Bell, ChevronDown, Plus, Search } from 'lucide-react'
 
 const starterLists = [
-  { title: '待开始', cards: ['定义领域模型', '配置应用路由'] },
-  { title: '进行中', cards: ['建立工程基础'] },
-  { title: '已完成', cards: ['初始化 Vite + React + TypeScript'] },
+  { title: 'To do', cards: ['Define domain models', 'Configure application routes'] },
+  { title: 'In progress', cards: ['Build the engineering foundation'] },
+  { title: 'Done', cards: ['Initialize Vite, React, and TypeScript'] },
 ]
 
 function App() {
@@ -13,12 +13,12 @@ function App() {
         <div className="flex items-center gap-6">
           <a className="text-lg font-bold tracking-tight" href="/">Kanban</a>
           <button className="flex items-center gap-1 text-sm font-medium text-slate-600" type="button">
-            我的工作空间 <ChevronDown size={16} />
+            My workspace <ChevronDown size={16} />
           </button>
         </div>
         <div className="flex items-center gap-3 text-slate-500">
-          <button aria-label="搜索" type="button"><Search size={20} /></button>
-          <button aria-label="通知" type="button"><Bell size={20} /></button>
+          <button aria-label="Search" type="button"><Search size={20} /></button>
+          <button aria-label="Notifications" type="button"><Bell size={20} /></button>
           <span className="grid size-8 place-items-center rounded-full bg-indigo-600 text-xs font-bold text-white">HW</span>
         </div>
       </header>
@@ -26,11 +26,11 @@ function App() {
       <section className="px-6 py-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <p className="mb-1 text-sm font-medium text-indigo-600">工作空间 / 产品开发</p>
-            <h1 className="m-0 text-3xl font-bold tracking-tight">项目看板</h1>
+            <p className="mb-1 text-sm font-medium text-indigo-600">Workspace / Product development</p>
+            <h1 className="m-0 text-3xl font-bold tracking-tight">Project board</h1>
           </div>
           <button className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm" type="button">
-            <Plus size={18} /> 新建列表
+            <Plus size={18} /> New list
           </button>
         </div>
 
@@ -49,7 +49,7 @@ function App() {
                 ))}
               </div>
               <button className="mt-4 flex items-center gap-1 text-sm font-medium text-slate-600" type="button">
-                <Plus size={16} /> 添加卡片
+                <Plus size={16} /> Add card
               </button>
             </section>
           ))}

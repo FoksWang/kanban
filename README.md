@@ -1,40 +1,40 @@
 # Kanban
 
-一个面向作品集的 Trello/Jira 风格项目管理看板。项目从零实现，以 React 19 与 TypeScript 为核心，逐步覆盖认证、工作空间、看板、卡片详情和拖拽排序等完整业务流程。
+A portfolio-ready, Trello/Jira-inspired project-management board. The application is built from scratch with React 19 and TypeScript, progressing through authentication, workspaces, boards, card details, and drag-and-drop ordering.
 
-## 已选技术栈
+## Technology stack
 
-- React 19、TypeScript、Vite
-- React Router、Zustand、TanStack Query
-- Tailwind CSS、shadcn/ui、Lucide 图标
-- React Hook Form、Zod
+- React 19, TypeScript, and Vite
+- React Router, Zustand, and TanStack Query
+- Tailwind CSS, shadcn/ui, and Lucide icons
+- React Hook Form and Zod
 - dnd-kit
-- Jest + React Testing Library、Playwright
-- GitHub Actions；部署目标为 Vercel 或 Netlify
+- Jest + React Testing Library and Playwright
+- GitHub Actions; deployment target: Vercel or Netlify
 
-详细的架构边界与交付顺序见 [docs/architecture.md](docs/architecture.md) 与 [docs/roadmap.md](docs/roadmap.md)。
+See [docs/architecture.md](docs/architecture.md) for architecture boundaries and [docs/roadmap.md](docs/roadmap.md) for the delivery plan.
 
-## 本地开发
+## Local development
 
 ```bash
 npm install
 npm run dev
 ```
 
-运行检查与生产构建：
+Run checks and create a production build:
 
 ```bash
 npm run lint
 npm run build
 ```
 
-## Git 工作流
+## Git workflow
 
-- `main`：始终可构建、可部署。
-- 功能从 `feature/<scope>` 分支开发，例如 `feature/board-dnd`。
-- 每个功能完成后，通过 Pull Request 合并至 `main`。
-- 使用 SourceTree 进行提交、分支与推送；使用 VS Code 编写与调试代码。
+- `main` must always be buildable and deployable.
+- Build features in `feature/<scope>` branches, for example `feature/board-dnd`.
+- Merge completed features into `main` through pull requests.
+- Use SourceTree for commits, branches, and pushes; use VS Code for development and debugging.
 
-## 许可证
+## License
 
-尚未添加许可证。在公开发布前请根据开源意图选择 MIT、Apache-2.0 或保留所有权利。
+No license has been selected yet. Choose MIT, Apache-2.0, or an appropriate proprietary license before promoting the project publicly.
