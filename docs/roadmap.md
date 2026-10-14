@@ -6,7 +6,8 @@
 - [x] Define the product scope, architecture boundaries, and Git workflow.
 - [x] Install the core dependencies and configure Tailwind CSS.
 - [ ] Set up routes, QueryClient, a global error boundary, and the directory conventions.
-- [ ] Configure ESLint/Prettier, Jest + RTL, Playwright, and GitHub Actions.
+- [x] Configure ESLint for TypeScript, React Hooks, and Fast Refresh.
+- [ ] Configure Prettier, Jest + RTL, Playwright, and GitHub Actions.
 
 ## Phase 1: Interactive static board
 

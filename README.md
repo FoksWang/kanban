@@ -28,6 +28,8 @@ npm run lint
 npm run build
 ```
 
+ESLint checks JavaScript and TypeScript, React Hooks, and Vite Fast Refresh conventions. Its flat configuration is defined in `eslint.config.js`. Run `npm run lint:fix` to apply available automatic fixes.
+
 ## Git workflow
 
 - `main` must always be buildable and deployable.
