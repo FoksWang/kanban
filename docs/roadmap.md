@@ -5,7 +5,8 @@
 - [x] Initialize Vite, React 19, and TypeScript.
 - [x] Define the product scope, architecture boundaries, and Git workflow.
 - [x] Install the core dependencies and configure Tailwind CSS.
-- [ ] Set up routes, QueryClient, a global error boundary, and the directory conventions.
+- [x] Set up basic Home and Board routes.
+- [ ] Set up QueryClient, a global error boundary, and the directory conventions.
 - [x] Configure ESLint for TypeScript, React Hooks, and Fast Refresh.
 - [x] Configure Prettier and automatic Tailwind CSS class sorting.
 - [ ] Configure Jest + RTL, Playwright, and GitHub Actions.
