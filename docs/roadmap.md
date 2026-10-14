@@ -7,7 +7,8 @@
 - [x] Install the core dependencies and configure Tailwind CSS.
 - [ ] Set up routes, QueryClient, a global error boundary, and the directory conventions.
 - [x] Configure ESLint for TypeScript, React Hooks, and Fast Refresh.
-- [ ] Configure Prettier, Jest + RTL, Playwright, and GitHub Actions.
+- [x] Configure Prettier and automatic Tailwind CSS class sorting.
+- [ ] Configure Jest + RTL, Playwright, and GitHub Actions.
 
 ## Phase 1: Interactive static board
 

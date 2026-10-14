@@ -11,25 +11,41 @@ function App() {
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <header className="flex min-h-16 items-center justify-between border-b border-slate-200 bg-white px-6">
         <div className="flex items-center gap-6">
-          <a className="text-lg font-bold tracking-tight" href="/">Kanban</a>
-          <button className="flex items-center gap-1 text-sm font-medium text-slate-600" type="button">
+          <a className="text-lg font-bold tracking-tight" href="/">
+            Kanban
+          </a>
+          <button
+            className="flex items-center gap-1 text-sm font-medium text-slate-600"
+            type="button"
+          >
             My workspace <ChevronDown size={16} />
           </button>
         </div>
         <div className="flex items-center gap-3 text-slate-500">
-          <button aria-label="Search" type="button"><Search size={20} /></button>
-          <button aria-label="Notifications" type="button"><Bell size={20} /></button>
-          <span className="grid size-8 place-items-center rounded-full bg-indigo-600 text-xs font-bold text-white">HW</span>
+          <button aria-label="Search" type="button">
+            <Search size={20} />
+          </button>
+          <button aria-label="Notifications" type="button">
+            <Bell size={20} />
+          </button>
+          <span className="grid size-8 place-items-center rounded-full bg-indigo-600 text-xs font-bold text-white">
+            HW
+          </span>
         </div>
       </header>
 
       <section className="px-6 py-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <p className="mb-1 text-sm font-medium text-indigo-600">Workspace / Product development</p>
+            <p className="mb-1 text-sm font-medium text-indigo-600">
+              Workspace / Product development
+            </p>
             <h1 className="m-0 text-3xl font-bold tracking-tight">Project board</h1>
           </div>
-          <button className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm" type="button">
+          <button
+            className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm"
+            type="button"
+          >
             <Plus size={18} /> New list
           </button>
         </div>
@@ -43,12 +59,18 @@ function App() {
               </div>
               <div className="space-y-3">
                 {list.cards.map((card) => (
-                  <article className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm" key={card}>
+                  <article
+                    className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+                    key={card}
+                  >
                     <p className="m-0 text-sm font-medium">{card}</p>
                   </article>
                 ))}
               </div>
-              <button className="mt-4 flex items-center gap-1 text-sm font-medium text-slate-600" type="button">
+              <button
+                className="mt-4 flex items-center gap-1 text-sm font-medium text-slate-600"
+                type="button"
+              >
                 <Plus size={16} /> Add card
               </button>
             </section>
