@@ -1,7 +1,5 @@
 import { Bell, Search } from 'lucide-react'
-import { Navigate, NavLink, Route, Routes } from 'react-router-dom'
-import { BoardPage } from './pages/BoardPage'
-import { HomePage } from './pages/HomePage'
+import { NavLink, Outlet } from 'react-router-dom'
 
 const navigationClassName = ({ isActive }: { isActive: boolean }) =>
   `rounded-md px-3 py-2 text-sm font-medium transition-colors ${
@@ -39,11 +37,7 @@ function App() {
         </div>
       </header>
 
-      <Routes>
-        <Route element={<HomePage />} path="/" />
-        <Route element={<BoardPage />} path="/board" />
-        <Route element={<Navigate replace to="/" />} path="*" />
-      </Routes>
+      <Outlet />
     </main>
   )
 }
