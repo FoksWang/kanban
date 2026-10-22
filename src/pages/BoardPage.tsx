@@ -1,12 +1,9 @@
 import { Plus } from 'lucide-react'
-
-const starterLists = [
-  { title: 'To do', cards: ['Define domain models', 'Configure application routes'] },
-  { title: 'In progress', cards: ['Build the engineering foundation'] },
-  { title: 'Done', cards: ['Initialize Vite, React, and TypeScript'] },
-]
+import { useKanban } from '@/stores/useKanban'
 
 export function BoardPage() {
+  const lists = useKanban((state) => state.lists)
+
   return (
     <section className="px-6 py-8">
       <div className="mb-8 flex items-center justify-between">
@@ -25,7 +22,7 @@ export function BoardPage() {
       </div>
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {starterLists.map((list) => (
+        {lists.map((list) => (
           <section className="rounded-xl bg-slate-100 p-4" key={list.title}>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="m-0 text-sm font-semibold">{list.title}</h2>
