@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react'
+import { Columns3, Plus } from 'lucide-react'
 import { useId, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
@@ -14,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useKanban } from '@/stores/useKanban'
+import { KanbanGroup } from './kanban-group'
 
 function CreateDialog({ label, onCreate }: { label: string; onCreate: (title: string) => void }) {
   const [open, setOpen] = useState(false)
@@ -80,48 +81,67 @@ export function Board() {
   const addCard = useKanban((state) => state.addCard)
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border-b pb-6">
+    <section className="mx-auto max-w-[1440px] px-4 py-8 sm:px-8 sm:py-12">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-6">
         <div>
-          <p className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+          <p className="mb-4 text-xs font-medium tracking-wide text-muted-foreground">
             Workspace / Product development
           </p>
-          <h1 className="text-3xl font-bold tracking-tight">Project board</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {lists.length} lists · {lists.reduce((total, list) => total + list.cards.length, 0)}{' '}
-            cards
+          <div className="flex items-center gap-3">
+            <span className="grid size-10 place-items-center rounded-xl border bg-background shadow-xs">
+              <Columns3 aria-hidden="true" className="size-5 text-muted-foreground" />
+            </span>
+            <h1 className="text-3xl font-semibold tracking-tight">Project board</h1>
+          </div>
+          <p className="mt-3 text-sm text-muted-foreground">
+            A clear space for the work that moves your project forward.
           </p>
         </div>
         <CreateDialog label="List" onCreate={addList} />
       </div>
 
-      <div className="grid items-start gap-5 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-y py-3">
+        <div className="flex items-center gap-2 text-sm font-medium">
+          <Columns3 aria-hidden="true" className="size-4 text-muted-foreground" />
+          Board overview
+        </div>
+        <p className="text-xs text-muted-foreground tabular-nums">
+          {lists.length} lists · {lists.reduce((total, list) => total + list.cards.length, 0)} cards
+        </p>
+      </div>
+
+      <div
+        aria-label="Kanban groups"
+        className="grid auto-cols-[minmax(18rem,1fr)] grid-flow-col gap-5 overflow-x-auto rounded-2xl pb-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        role="region"
+        tabIndex={0}
+      >
         {lists.map((list) => (
-          <section className="rounded-xl border bg-muted/50 p-4" key={list.id}>
-            <div className="mb-4 flex items-center justify-between gap-3 px-1">
-              <h2 className="min-w-0 text-sm font-semibold wrap-break-word">{list.title}</h2>
-              <span className="grid size-6 shrink-0 place-items-center rounded-full bg-background text-xs text-muted-foreground">
-                {list.cards.length}
-              </span>
-            </div>
-            <div className="space-y-3">
-              {list.cards.map((card) => (
-                <article className="rounded-lg border bg-card p-4 shadow-sm" key={card.id}>
-                  <p className="text-sm leading-6 font-medium wrap-break-word text-card-foreground">
-                    {card.title}
-                  </p>
-                </article>
-              ))}
-              {list.cards.length === 0 && (
-                <p className="rounded-lg border border-dashed px-4 py-8 text-center text-sm text-muted-foreground">
-                  No cards yet. Add your first task.
+          <KanbanGroup
+            action={<CreateDialog label="Card" onCreate={(title) => addCard(list.id, title)} />}
+            count={list.cards.length}
+            key={list.id}
+            status={
+              list.id === 'done' ? 'complete' : list.id === 'in-progress' ? 'active' : 'neutral'
+            }
+            title={list.title}
+          >
+            {list.cards.map((card) => (
+              <article
+                className="rounded-xl border border-border/80 bg-card p-4 shadow-xs transition-shadow hover:shadow-sm"
+                key={card.id}
+              >
+                <p className="text-sm leading-6 font-medium wrap-break-word text-card-foreground">
+                  {card.title}
                 </p>
-              )}
-            </div>
-            <div className="mt-4">
-              <CreateDialog label="Card" onCreate={(title) => addCard(list.id, title)} />
-            </div>
-          </section>
+              </article>
+            ))}
+            {list.cards.length === 0 && (
+              <p className="rounded-xl border border-dashed px-4 py-10 text-center text-sm leading-6 text-muted-foreground">
+                No cards yet. Add your first task.
+              </p>
+            )}
+          </KanbanGroup>
         ))}
       </div>
     </section>
