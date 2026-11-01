@@ -12,7 +12,7 @@
 - [x] ESLint, Prettier, state tests, and production-browser tests.
 - [x] GitHub Actions checks and GitHub Pages deployment workflow.
 - [x] English README and architecture documentation.
-- [ ] Add a short recorded walkthrough.
+- [x] Add a short recorded walkthrough.
 
 ## Optional future work
 

@@ -4,7 +4,7 @@
 
 A focused, local-first project board built with React 19 and TypeScript. Create tasks, move them through your workflow, and return to the same board after a refresh.
 
-**[Try the live demo](https://fokswang.github.io/kanban/#/board)** · [Architecture](docs/architecture.md) · [Roadmap](docs/roadmap.md)
+**[Try the live demo](https://fokswang.github.io/kanban/#/board)** · [Watch the walkthrough](https://fokswang.github.io/kanban/demo/kanban-demo.mp4) · [Architecture](docs/architecture.md) · [Roadmap](docs/roadmap.md)
 
 ![Kanban board showing task cards grouped by workflow status](docs/images/board.png)
 
@@ -104,7 +104,13 @@ tests/
 
 ## Demo media
 
-The screenshot above shows the running application. To refresh it, start the local preview and run `npm run screenshot`; set `DEMO_URL` to capture a different local or deployed URL. A short walkthrough recording can be added here when available.
+[Watch the 19-second walkthrough](https://fokswang.github.io/kanban/demo/kanban-demo.mp4) (MP4, approximately 1.4 MB; no audio).
+
+[![Play the Kanban walkthrough](docs/images/board.png)](https://fokswang.github.io/kanban/demo/kanban-demo.mp4)
+
+The recording is included in the repository at [public/demo/kanban-demo.mp4](public/demo/kanban-demo.mp4) and served by GitHub Pages. Click the preview above to open it in your browser's video player.
+
+The screenshot shows the running application. To refresh it, start the local preview and run `npm run screenshot`; set `DEMO_URL` to capture a different local or deployed URL.
 
 ## License
 
