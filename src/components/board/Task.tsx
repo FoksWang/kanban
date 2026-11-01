@@ -9,7 +9,7 @@ export const Task = (props: TaskProps) => {
   return (
     <Card
       aria-label={props.title}
-      className="min-h-36 gap-3 rounded-lg border border-border/80 shadow-xs ring-0 transition-shadow hover:shadow-sm"
+      className="min-h-44 gap-3 rounded-lg border border-border/80 shadow-xs ring-0 transition-shadow hover:shadow-sm"
       role="article"
     >
       <CardHeader>
