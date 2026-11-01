@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useKanban } from '@/stores/useKanban'
 import { KanbanGroup } from './kanban-group'
+import { Task } from './Task'
 
 function CreateDialog({ label, onCreate }: { label: string; onCreate: (title: string) => void }) {
   const [open, setOpen] = useState(false)
@@ -127,14 +128,7 @@ export function Board() {
             title={list.title}
           >
             {list.cards.map((card) => (
-              <article
-                className="rounded-xl border border-border/80 bg-card p-4 shadow-xs transition-shadow hover:shadow-sm"
-                key={card.id}
-              >
-                <p className="text-sm leading-6 font-medium wrap-break-word text-card-foreground">
-                  {card.title}
-                </p>
-              </article>
+              <Task key={card.id} title={card.title} />
             ))}
             {list.cards.length === 0 && (
               <p className="rounded-xl border border-dashed px-4 py-10 text-center text-sm leading-6 text-muted-foreground">
