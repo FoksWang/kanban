@@ -16,6 +16,7 @@ export interface KanbanState {
   groups: KanbanGroup[]
   addGroup: (groupName: string) => void
   addTask: (groupId: string, title: string) => void
+  deleteTask: (taskId: Task['id']) => void
   moveTask: (taskId: Task['id'], targetGroupId: string, targetIndex: number) => void
 }
 
@@ -58,6 +59,14 @@ export const useKanban = create<KanbanState>()(
               ? { ...group, tasks: [...group.tasks, { id: crypto.randomUUID(), title: name }] }
               : group,
           ),
+        }))
+      },
+      deleteTask: (taskId) => {
+        set((state) => ({
+          groups: state.groups.map((group) => ({
+            ...group,
+            tasks: group.tasks.filter((task) => task.id !== taskId),
+          })),
         }))
       },
       moveTask: (taskId, targetGroupId, targetIndex) => {

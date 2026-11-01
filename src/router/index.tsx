@@ -1,9 +1,11 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter, createHashRouter, Navigate } from 'react-router-dom'
 import App from '@/App'
 import { BoardPage } from '@/pages/BoardPage'
 import { HomePage } from '@/pages/HomePage'
 
-export const router = createBrowserRouter([
+const createRouter = import.meta.env.BASE_URL === '/' ? createBrowserRouter : createHashRouter
+
+export const router = createRouter([
   {
     path: '/',
     Component: App,

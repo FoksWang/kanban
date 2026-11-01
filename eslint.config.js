@@ -6,7 +6,7 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 export default defineConfig([
-  globalIgnores(['dist/**', 'coverage/**']),
+  globalIgnores(['dist/**', 'coverage/**', 'playwright-report/**', 'test-results/**']),
   {
     files: ['**/*.{js,mjs}'],
     extends: [js.configs.recommended],
@@ -30,7 +30,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['vite.config.ts'],
+    files: ['vite.config.ts', 'vitest.config.ts', 'playwright.config.ts'],
     languageOptions: {
       globals: globals.node,
     },

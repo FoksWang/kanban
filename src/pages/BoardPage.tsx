@@ -6,6 +6,15 @@ export function BoardPage() {
   const addGroup = useKanban((state) => state.addGroup)
   const addTask = useKanban((state) => state.addTask)
   const moveTask = useKanban((state) => state.moveTask)
+  const deleteTask = useKanban((state) => state.deleteTask)
 
-  return <Board groups={groups} addGroup={addGroup} addTask={addTask} moveTask={moveTask} />
+  return (
+    <Board
+      groups={groups}
+      addGroup={addGroup}
+      addTask={addTask}
+      moveTask={moveTask}
+      deleteTask={deleteTask}
+    />
+  )
 }

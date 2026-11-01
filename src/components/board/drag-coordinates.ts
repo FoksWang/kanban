@@ -13,6 +13,7 @@ export const keyboardCoordinates: KeyboardCoordinateGetter = (
   const y = rect.top + rect.height / 2
   const candidates = context.droppableContainers
     .getEnabled()
+    .filter((container) => container.id !== context.over?.id)
     .filter(
       (container) => container.data.current?.type === 'task' || container.data.current?.count === 0,
     )

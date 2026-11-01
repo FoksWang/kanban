@@ -1,37 +1,40 @@
-# Architecture and scope
+# Architecture
 
-## Version-one capabilities
+## Current release
 
-1. User sign-up, sign-in, and session restoration.
-2. Workspace creation, switching, and a member-management entry point.
-3. Board creation, board listing, and basic board settings.
-4. List creation, editing, deletion, and ordering.
-5. Card creation, editing, deletion, and cross-list drag-and-drop.
-6. Card details: descriptions, due dates, labels, attachments, and comments, introduced incrementally.
+Kanban is a client-only React application. `BoardPage` selects the board data and actions from Zustand and passes them into `Board`. `Board` coordinates creation dialogs and drag-and-drop events; `KanbanGroup` defines a named drop target; `Task` renders a draggable card and its delete confirmation.
 
-## Frontend responsibilities
+## Data model
 
-```
-src/
-  app/           Routes, providers, and application initialization
-  features/      Business-domain pages, components, hooks, and requests
-  components/    Shared UI components
-  stores/        Zustand: client-side UI state only
-  services/      API client, endpoint types, and request wrappers
-  lib/           Shared utilities, validation schemas, and constants
-  test/          Test setup and helpers
+```ts
+type Task = { id: number | string; title: string }
+interface KanbanGroup {
+  groupId: string
+  groupName: string
+  tasks: Task[]
+}
 ```
 
-## State strategy
+Groups are the single source of truth. Task IDs retain their original type, including during drag and drop. Drop-target IDs are namespaced to avoid confusing cards with groups.
 
-- Server data: TanStack Query owns caching, invalidation, and request state.
-- Client UI state: Zustand handles short-lived state such as sidebar visibility and the selected workspace.
-- Form state: React Hook Form + Zod. Successful submissions invalidate the relevant queries.
-- Drag and drop: dnd-kit owns the interaction; a mutation persists the final position and handles rollback on failure.
+## State transitions
 
-## Design principles
+`addGroup`, `addTask`, `deleteTask`, and `moveTask` update groups immutably. Invalid moves do not alter the board. A valid drop supplies a target group and insertion index; cancellation or a drop outside the board leaves data unchanged.
 
-- Feature-first organization prevents business code from being scattered by component type.
-- A replaceable API layer supports a mock server first and a production backend later.
-- Accessibility comes first: keyboard operation, focus management, and semantic markup are acceptance criteria.
-- Never duplicate server data in Zustand; retain one source of truth.
+Zustand `persist` serializes only groups to localStorage using `kanban-storage`. A new store hydrates the saved groups while retaining executable actions. Persistence is local to the current browser origin and is not a server-side database or a cross-device backup.
+
+## Presentation and interactions
+
+Tailwind v4 and shadcn/ui provide theme tokens and accessible primitives. Drag interaction uses dnd-kit core with pointer and keyboard sensors. Delete buttons stop propagation to the card's drag listeners. A confirmation dialog protects against accidental deletion.
+
+## Delivery
+
+Vite builds static assets. The root development build uses browser routes. A non-root base path selects hash routing for static hosting. CI tests the production build with `/kanban/`, then deploys that tested artifact through GitHub Pages after all checks pass.
+
+## Verification
+
+Vitest with jsdom verifies board transitions and localStorage hydration. Playwright tests creation, deletion/cancellation, pointer movement, keyboard sorting/cancellation, refresh restoration, and static-hosting navigation in isolated Chromium contexts.
+
+## Future boundaries
+
+Authentication, workspaces, collaboration, and an API are outside this release. If a backend is added, TanStack Query should own server state and the local-only persistence model should be revisited rather than maintaining two independent sources of truth.

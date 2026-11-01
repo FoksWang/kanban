@@ -109,9 +109,9 @@ function CreateDialog({ label, onCreate }: { label: string; onCreate: (title: st
   )
 }
 
-type BoardProps = Pick<KanbanState, 'groups' | 'addGroup' | 'addTask' | 'moveTask'>
+type BoardProps = Pick<KanbanState, 'groups' | 'addGroup' | 'addTask' | 'moveTask' | 'deleteTask'>
 
-export function Board({ groups, addGroup, addTask, moveTask }: BoardProps) {
+export function Board({ groups, addGroup, addTask, moveTask, deleteTask }: BoardProps) {
   const [activeId, setActiveId] = useState<TaskData['id'] | null>(null)
   const activeTask = groups.flatMap((group) => group.tasks).find((task) => task.id === activeId)
   const sensors = useSensors(
@@ -202,6 +202,7 @@ export function Board({ groups, addGroup, addTask, moveTask }: BoardProps) {
                   key={`${typeof task.id}:${task.id}`}
                   groupId={group.groupId}
                   title={task.title}
+                  onDelete={deleteTask}
                 />
               ))}
               {group.tasks.length === 0 && (
