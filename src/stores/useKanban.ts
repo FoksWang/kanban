@@ -1,79 +1,79 @@
 import { create } from 'zustand'
 
-interface KanbanList {
-  id: string
+export type Task = {
+  id: number | string
   title: string
-  cards: { id: string; title: string }[]
 }
 
-interface KanbanState {
-  lists: KanbanList[]
-  addList: (title: string) => void
-  addCard: (listId: string, title: string) => void
-  moveCard: (cardId: string, targetListId: string, targetIndex: number) => void
+export interface KanbanGroup {
+  groupId: string
+  groupName: string
+  tasks: Task[]
+}
+
+export interface KanbanState {
+  groups: KanbanGroup[]
+  addGroup: (groupName: string) => void
+  addTask: (groupId: string, title: string) => void
+  moveTask: (taskId: Task['id'], targetGroupId: string, targetIndex: number) => void
 }
 
 export const useKanban = create<KanbanState>((set) => ({
-  lists: [
+  groups: [
     {
-      id: 'to-do',
-      title: 'To do',
-      cards: [
+      groupId: 'to-do',
+      groupName: 'To do',
+      tasks: [
         { id: 'domain-models', title: 'Define domain models' },
         { id: 'routes', title: 'Configure application routes' },
       ],
     },
     {
-      id: 'in-progress',
-      title: 'In progress',
-      cards: [{ id: 'foundation', title: 'Build the engineering foundation' }],
+      groupId: 'in-progress',
+      groupName: 'In progress',
+      tasks: [{ id: 'foundation', title: 'Build the engineering foundation' }],
     },
     {
-      id: 'done',
-      title: 'Done',
-      cards: [{ id: 'initialize', title: 'Initialize Vite, React, and TypeScript' }],
+      groupId: 'done',
+      groupName: 'Done',
+      tasks: [{ id: 'initialize', title: 'Initialize Vite, React, and TypeScript' }],
     },
   ],
-  addList: (title) => {
-    const trimmedTitle = title.trim()
-    if (!trimmedTitle) return
-
+  addGroup: (groupName) => {
+    const name = groupName.trim()
+    if (!name) return
     set((state) => ({
-      lists: [...state.lists, { id: crypto.randomUUID(), title: trimmedTitle, cards: [] }],
+      groups: [...state.groups, { groupId: crypto.randomUUID(), groupName: name, tasks: [] }],
     }))
   },
-  addCard: (listId, title) => {
-    const trimmedTitle = title.trim()
-    if (!trimmedTitle) return
-
+  addTask: (groupId, title) => {
+    const name = title.trim()
+    if (!name) return
     set((state) => ({
-      lists: state.lists.map((list) =>
-        list.id === listId
-          ? {
-              ...list,
-              cards: [...list.cards, { id: crypto.randomUUID(), title: trimmedTitle }],
-            }
-          : list,
+      groups: state.groups.map((group) =>
+        group.groupId === groupId
+          ? { ...group, tasks: [...group.tasks, { id: crypto.randomUUID(), title: name }] }
+          : group,
       ),
     }))
   },
-  moveCard: (cardId, targetListId, targetIndex) => {
+  moveTask: (taskId, targetGroupId, targetIndex) => {
     set((state) => {
-      const source = state.lists.find((list) => list.cards.some((card) => card.id === cardId))
-      const target = state.lists.find((list) => list.id === targetListId)
-      const card = source?.cards.find((item) => item.id === cardId)
-      if (!source || !target || !card) return state
+      const source = state.groups.find((group) => group.tasks.some((task) => task.id === taskId))
+      const target = state.groups.find((group) => group.groupId === targetGroupId)
+      const task = source?.tasks.find((item) => item.id === taskId)
+      if (!source || !target || !task) return state
 
-      const cards = target.cards.filter((item) => item.id !== cardId)
-      cards.splice(Math.max(0, Math.min(targetIndex, cards.length)), 0, card)
+      const tasks = target.tasks.filter((item) => item.id !== taskId)
+      tasks.splice(Math.max(0, Math.min(targetIndex, tasks.length)), 0, task)
 
       return {
-        lists: state.lists.map((list) => {
-          if (list.id === targetListId) return { ...list, cards }
-          if (list.id === source.id) {
-            return { ...list, cards: list.cards.filter((item) => item.id !== cardId) }
+        groups: state.groups.map((group) => {
+          if (group.groupId === targetGroupId) return { ...group, tasks }
+          if (group.groupId === source.groupId) {
+            return { ...group, tasks: group.tasks.filter((item) => item.id !== taskId) }
           }
-          return list
+          return group
         }),
       }
     })

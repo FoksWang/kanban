@@ -20,7 +20,7 @@ export const KanbanGroup = (props: KanbanGroupProps) => {
   const titleId = useId()
   const { setNodeRef, isOver } = useDroppable({
     id: `group:${typeof props.id}:${props.id}`,
-    data: { listId: props.id, type: 'group', count: props.count },
+    data: { groupId: props.id, type: 'group', count: props.count },
   })
 
   return (

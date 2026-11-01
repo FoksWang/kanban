@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useKanban } from '@/stores/useKanban'
+import type { KanbanState, Task as TaskData } from '@/stores/useKanban'
 import { KanbanGroup } from './kanban-group'
 import { Task } from './Task'
 import { keyboardCoordinates } from './drag-coordinates'
@@ -109,13 +109,11 @@ function CreateDialog({ label, onCreate }: { label: string; onCreate: (title: st
   )
 }
 
-export function Board() {
-  const lists = useKanban((state) => state.lists)
-  const addList = useKanban((state) => state.addList)
-  const addCard = useKanban((state) => state.addCard)
-  const moveCard = useKanban((state) => state.moveCard)
-  const [activeId, setActiveId] = useState<string | null>(null)
-  const activeCard = lists.flatMap((list) => list.cards).find((card) => card.id === activeId)
+type BoardProps = Pick<KanbanState, 'groups' | 'addGroup' | 'addTask' | 'moveTask'>
+
+export function Board({ groups, addGroup, addTask, moveTask }: BoardProps) {
+  const [activeId, setActiveId] = useState<TaskData['id'] | null>(null)
+  const activeTask = groups.flatMap((group) => group.tasks).find((task) => task.id === activeId)
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: keyboardCoordinates }),
@@ -127,10 +125,10 @@ export function Board() {
     const dropType = over.data.current?.type
     if (dropType !== 'task' && dropType !== 'group') return
     if (dropType === 'task' && active.id === over.data.current?.taskId) return
-    const target = lists.find((list) => list.id === over.data.current?.listId)
+    const target = groups.find((group) => group.groupId === over.data.current?.groupId)
     if (!target) return
-    const index = target.cards.findIndex((card) => card.id === over.data.current?.taskId)
-    moveCard(String(active.id), target.id, index < 0 ? target.cards.length : index)
+    const index = target.tasks.findIndex((task) => task.id === over.data.current?.taskId)
+    moveTask(active.id, target.groupId, index < 0 ? target.tasks.length : index)
   }
 
   return (
@@ -150,7 +148,7 @@ export function Board() {
             A clear space for the work that moves your project forward.
           </p>
         </div>
-        <CreateDialog label="List" onCreate={addList} />
+        <CreateDialog label="List" onCreate={addGroup} />
       </div>
 
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-y py-3">
@@ -159,7 +157,8 @@ export function Board() {
           Board overview
         </div>
         <p className="text-xs text-muted-foreground tabular-nums">
-          {lists.length} lists · {lists.reduce((total, list) => total + list.cards.length, 0)} cards
+          {groups.length} lists · {groups.reduce((total, group) => total + group.tasks.length, 0)}{' '}
+          cards
         </p>
       </div>
 
@@ -171,7 +170,7 @@ export function Board() {
         collisionDetection={detectCollision}
         onDragCancel={() => setActiveId(null)}
         onDragEnd={handleDragEnd}
-        onDragStart={({ active }) => setActiveId(String(active.id))}
+        onDragStart={({ active }) => setActiveId(active.id)}
         sensors={sensors}
       >
         <div
@@ -180,21 +179,32 @@ export function Board() {
           role="region"
           tabIndex={0}
         >
-          {lists.map((list) => (
+          {groups.map((group) => (
             <KanbanGroup
-              action={<CreateDialog label="Card" onCreate={(title) => addCard(list.id, title)} />}
-              count={list.cards.length}
-              id={list.id}
-              key={list.id}
-              status={
-                list.id === 'done' ? 'complete' : list.id === 'in-progress' ? 'active' : 'neutral'
+              action={
+                <CreateDialog label="Card" onCreate={(title) => addTask(group.groupId, title)} />
               }
-              title={list.title}
+              count={group.tasks.length}
+              id={group.groupId}
+              key={group.groupId}
+              status={
+                group.groupId === 'done'
+                  ? 'complete'
+                  : group.groupId === 'in-progress'
+                    ? 'active'
+                    : 'neutral'
+              }
+              title={group.groupName}
             >
-              {list.cards.map((card) => (
-                <Task id={card.id} key={card.id} listId={list.id} title={card.title} />
+              {group.tasks.map((task) => (
+                <Task
+                  id={task.id}
+                  key={`${typeof task.id}:${task.id}`}
+                  groupId={group.groupId}
+                  title={task.title}
+                />
               ))}
-              {list.cards.length === 0 && (
+              {group.tasks.length === 0 && (
                 <p className="rounded-xl border border-dashed px-4 py-10 text-center text-sm leading-6 text-muted-foreground">
                   No cards yet. Add your first task.
                 </p>
@@ -203,12 +213,12 @@ export function Board() {
           ))}
         </div>
         <DragOverlay>
-          {activeCard ? (
+          {activeTask ? (
             <Card className="min-h-44 rounded-lg border border-blue-300 shadow-lg ring-0">
               <CardContent>
                 <p className="mb-3 text-xs text-muted-foreground">Task</p>
                 <h3 className="text-sm leading-6 font-semibold wrap-break-word">
-                  {activeCard.title}
+                  {activeTask.title}
                 </h3>
               </CardContent>
             </Card>

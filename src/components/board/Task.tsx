@@ -2,15 +2,14 @@ import { useDraggable, useDroppable } from '@dnd-kit/core'
 import { GripVertical, SquareCheck } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
+import type { Task as TaskData } from '@/stores/useKanban'
 
-export interface TaskProps {
-  id: number | string
-  listId: string
-  title: string
+export interface TaskProps extends TaskData {
+  groupId: string
 }
 
 export const Task = (props: TaskProps) => {
-  const data = { type: 'task', taskId: props.id, listId: props.listId }
+  const data = { type: 'task', taskId: props.id, groupId: props.groupId }
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: props.id,
     data,
