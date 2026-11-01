@@ -2,6 +2,7 @@ import { useId, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
 interface KanbanGroupProps {
+  id: string
   title: string
   count: number
   status?: 'neutral' | 'active' | 'complete'
@@ -16,6 +17,7 @@ const statusColors = {
 }
 
 export function KanbanGroup({
+  id,
   title,
   count,
   status = 'neutral',
@@ -23,11 +25,19 @@ export function KanbanGroup({
   action,
 }: KanbanGroupProps) {
   const titleId = useId()
+  const { setNodeRef, isOver } = useDroppable({
+    id: `list:${id}`,
+    data: { listId: id, type: 'list' },
+  })
 
   return (
     <section
       aria-labelledby={titleId}
-      className="flex min-h-96 min-w-0 flex-col rounded-2xl border border-border/70 bg-muted/60 p-3"
+      className={cn(
+        'flex min-h-96 min-w-0 flex-col rounded-2xl border border-border/70 bg-muted/60 p-3',
+        isOver && 'border-blue-400 bg-blue-50/50',
+      )}
+      ref={setNodeRef}
     >
       <header className="flex items-center gap-3 px-2 pt-2 pb-5">
         <span
@@ -46,3 +56,4 @@ export function KanbanGroup({
     </section>
   )
 }
+import { useDroppable } from '@dnd-kit/core'

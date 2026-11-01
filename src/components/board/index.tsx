@@ -1,6 +1,7 @@
 import { Columns3, Plus } from 'lucide-react'
 import { useId, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Dialog,
   DialogClose,
@@ -16,6 +17,17 @@ import { Label } from '@/components/ui/label'
 import { useKanban } from '@/stores/useKanban'
 import { KanbanGroup } from './kanban-group'
 import { Task } from './Task'
+
+const detectCollision: CollisionDetection = (args) => {
+  if (!args.pointerCoordinates) return closestCenter(args)
+  const collisions = pointerWithin(args)
+  const tasks = collisions.filter(
+    (collision) =>
+      args.droppableContainers.find((container) => container.id === collision.id)?.data.current
+        ?.type === 'task',
+  )
+  return tasks.length ? tasks : collisions
+}
 
 function CreateDialog({ label, onCreate }: { label: string; onCreate: (title: string) => void }) {
   const [open, setOpen] = useState(false)
@@ -80,6 +92,22 @@ export function Board() {
   const lists = useKanban((state) => state.lists)
   const addList = useKanban((state) => state.addList)
   const addCard = useKanban((state) => state.addCard)
+  const moveCard = useKanban((state) => state.moveCard)
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const activeCard = lists.flatMap((list) => list.cards).find((card) => card.id === activeId)
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
+
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    setActiveId(null)
+    if (!over || active.id === over.id) return
+    const target = lists.find((list) => list.id === over.data.current?.listId)
+    if (!target) return
+    const index = target.cards.findIndex((card) => card.id === over.id)
+    moveCard(String(active.id), target.id, index < 0 ? target.cards.length : index)
+  }
 
   return (
     <section className="mx-auto max-w-[1440px] px-4 py-8 sm:px-8 sm:py-12">
@@ -111,33 +139,80 @@ export function Board() {
         </p>
       </div>
 
-      <div
-        aria-label="Kanban groups"
-        className="grid auto-cols-[minmax(18rem,1fr)] grid-flow-col gap-5 overflow-x-auto rounded-2xl pb-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-        role="region"
-        tabIndex={0}
+      <p className="mb-3 text-xs text-muted-foreground">
+        Drag the handle to move a task. With a keyboard, press Space, use arrow keys, then Space to
+        drop or Escape to cancel.
+      </p>
+      <DndContext
+        collisionDetection={detectCollision}
+        onDragCancel={() => setActiveId(null)}
+        onDragEnd={handleDragEnd}
+        onDragStart={({ active }) => setActiveId(String(active.id))}
+        sensors={sensors}
       >
-        {lists.map((list) => (
-          <KanbanGroup
-            action={<CreateDialog label="Card" onCreate={(title) => addCard(list.id, title)} />}
-            count={list.cards.length}
-            key={list.id}
-            status={
-              list.id === 'done' ? 'complete' : list.id === 'in-progress' ? 'active' : 'neutral'
-            }
-            title={list.title}
-          >
-            {list.cards.map((card) => (
-              <Task key={card.id} title={card.title} />
-            ))}
-            {list.cards.length === 0 && (
-              <p className="rounded-xl border border-dashed px-4 py-10 text-center text-sm leading-6 text-muted-foreground">
-                No cards yet. Add your first task.
-              </p>
-            )}
-          </KanbanGroup>
-        ))}
-      </div>
+        <div
+          aria-label="Kanban groups"
+          className="grid auto-cols-[minmax(18rem,1fr)] grid-flow-col gap-5 overflow-x-auto rounded-2xl pb-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          role="region"
+          tabIndex={0}
+        >
+          {lists.map((list) => (
+            <KanbanGroup
+              action={<CreateDialog label="Card" onCreate={(title) => addCard(list.id, title)} />}
+              count={list.cards.length}
+              id={list.id}
+              key={list.id}
+              status={
+                list.id === 'done' ? 'complete' : list.id === 'in-progress' ? 'active' : 'neutral'
+              }
+              title={list.title}
+            >
+              <SortableContext
+                items={list.cards.map((card) => card.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {list.cards.map((card) => (
+                  <Task id={card.id} key={card.id} listId={list.id} title={card.title} />
+                ))}
+              </SortableContext>
+              {list.cards.length === 0 && (
+                <p className="rounded-xl border border-dashed px-4 py-10 text-center text-sm leading-6 text-muted-foreground">
+                  No cards yet. Add your first task.
+                </p>
+              )}
+            </KanbanGroup>
+          ))}
+        </div>
+        <DragOverlay>
+          {activeCard ? (
+            <Card className="min-h-44 rounded-lg border border-blue-300 shadow-lg ring-0">
+              <CardContent>
+                <p className="mb-3 text-xs text-muted-foreground">Task</p>
+                <h3 className="text-sm leading-6 font-semibold wrap-break-word">
+                  {activeCard.title}
+                </h3>
+              </CardContent>
+            </Card>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
     </section>
   )
 }
+import {
+  closestCenter,
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  pointerWithin,
+  useSensor,
+  useSensors,
+  type CollisionDetection,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
