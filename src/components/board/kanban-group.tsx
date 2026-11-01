@@ -1,12 +1,12 @@
-import { useId, type ReactNode } from 'react'
+import { useDroppable } from '@dnd-kit/core'
+import { useId, type PropsWithChildren, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
-interface KanbanGroupProps {
-  id: string
+export interface KanbanGroupProps extends PropsWithChildren {
+  id: number | string
   title: string
   count: number
   status?: 'neutral' | 'active' | 'complete'
-  children: ReactNode
   action: ReactNode
 }
 
@@ -16,18 +16,11 @@ const statusColors = {
   complete: 'bg-emerald-500 ring-emerald-500/15',
 }
 
-export function KanbanGroup({
-  id,
-  title,
-  count,
-  status = 'neutral',
-  children,
-  action,
-}: KanbanGroupProps) {
+export const KanbanGroup = (props: KanbanGroupProps) => {
   const titleId = useId()
   const { setNodeRef, isOver } = useDroppable({
-    id: `list:${id}`,
-    data: { listId: id, type: 'list' },
+    id: `group:${typeof props.id}:${props.id}`,
+    data: { listId: props.id, type: 'group', count: props.count },
   })
 
   return (
@@ -42,18 +35,17 @@ export function KanbanGroup({
       <header className="flex items-center gap-3 px-2 pt-2 pb-5">
         <span
           aria-hidden="true"
-          className={cn('size-2 rounded-full ring-4', statusColors[status])}
+          className={cn('size-2 rounded-full ring-4', statusColors[props.status ?? 'neutral'])}
         />
         <h2 className="min-w-0 text-sm font-semibold wrap-break-word" id={titleId}>
-          {title}
+          {props.title}
         </h2>
         <span className="ml-auto grid size-6 shrink-0 place-items-center rounded-md border border-border/70 bg-background/80 text-xs font-medium text-muted-foreground tabular-nums">
-          {count}
+          {props.count}
         </span>
       </header>
-      <div className="flex-1 space-y-3">{children}</div>
-      <footer className="mt-5 border-t border-border/60 pt-3">{action}</footer>
+      <div className="flex-1 space-y-3">{props.children}</div>
+      <footer className="mt-5 border-t border-border/60 pt-3">{props.action}</footer>
     </section>
   )
 }
-import { useDroppable } from '@dnd-kit/core'

@@ -1,3 +1,15 @@
+import {
+  closestCenter,
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  pointerWithin,
+  useSensor,
+  useSensors,
+  type CollisionDetection,
+  type DragEndEvent,
+} from '@dnd-kit/core'
 import { Columns3, Plus } from 'lucide-react'
 import { useId, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -17,9 +29,18 @@ import { Label } from '@/components/ui/label'
 import { useKanban } from '@/stores/useKanban'
 import { KanbanGroup } from './kanban-group'
 import { Task } from './Task'
+import { keyboardCoordinates } from './drag-coordinates'
 
 const detectCollision: CollisionDetection = (args) => {
-  if (!args.pointerCoordinates) return closestCenter(args)
+  if (!args.pointerCoordinates) {
+    return closestCenter({
+      ...args,
+      droppableContainers: args.droppableContainers.filter(
+        (container) =>
+          container.data.current?.type === 'task' || container.data.current?.count === 0,
+      ),
+    })
+  }
   const collisions = pointerWithin(args)
   const tasks = collisions.filter(
     (collision) =>
@@ -97,15 +118,18 @@ export function Board() {
   const activeCard = lists.flatMap((list) => list.cards).find((card) => card.id === activeId)
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+    useSensor(KeyboardSensor, { coordinateGetter: keyboardCoordinates }),
   )
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     setActiveId(null)
-    if (!over || active.id === over.id) return
+    if (!over || active.data.current?.type !== 'task') return
+    const dropType = over.data.current?.type
+    if (dropType !== 'task' && dropType !== 'group') return
+    if (dropType === 'task' && active.id === over.data.current?.taskId) return
     const target = lists.find((list) => list.id === over.data.current?.listId)
     if (!target) return
-    const index = target.cards.findIndex((card) => card.id === over.id)
+    const index = target.cards.findIndex((card) => card.id === over.data.current?.taskId)
     moveCard(String(active.id), target.id, index < 0 ? target.cards.length : index)
   }
 
@@ -140,8 +164,8 @@ export function Board() {
       </div>
 
       <p className="mb-3 text-xs text-muted-foreground">
-        Drag the handle to move a task. With a keyboard, press Space, use arrow keys, then Space to
-        drop or Escape to cancel.
+        Drag a card to move a task. With a keyboard, press Space, use arrow keys, then Space to drop
+        or Escape to cancel.
       </p>
       <DndContext
         collisionDetection={detectCollision}
@@ -167,14 +191,9 @@ export function Board() {
               }
               title={list.title}
             >
-              <SortableContext
-                items={list.cards.map((card) => card.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                {list.cards.map((card) => (
-                  <Task id={card.id} key={card.id} listId={list.id} title={card.title} />
-                ))}
-              </SortableContext>
+              {list.cards.map((card) => (
+                <Task id={card.id} key={card.id} listId={list.id} title={card.title} />
+              ))}
               {list.cards.length === 0 && (
                 <p className="rounded-xl border border-dashed px-4 py-10 text-center text-sm leading-6 text-muted-foreground">
                   No cards yet. Add your first task.
@@ -199,20 +218,3 @@ export function Board() {
     </section>
   )
 }
-import {
-  closestCenter,
-  DndContext,
-  DragOverlay,
-  KeyboardSensor,
-  PointerSensor,
-  pointerWithin,
-  useSensor,
-  useSensors,
-  type CollisionDetection,
-  type DragEndEvent,
-} from '@dnd-kit/core'
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
